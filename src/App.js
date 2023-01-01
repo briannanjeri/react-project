@@ -1,65 +1,95 @@
-import React from 'react'
-import Header from './components/Header'
-import Tasks from './components/Tasks'
-import  {useState} from 'react'
-import AddTask from './components/AddTask'
+import React from "react";
+import {useState, useEffect } from "react";
+import MovieCard from "./MovieCard";
 
+//c62a2e9d
 
-const App = () => {
-  const [showAddTask, setShowAddTask]=useState(false)
-  const [tasks, setTasks]=useState([
-    {
-    id:1,
-    text:'Doctors appointment',
-    day:'Feb 5th 2022',
-    reminder:true,
-   },{
-    id:2,
-    text:'Office appointment',
-    day:'Feb 5th 2022',
-    reminder:true,
+const API_URL='http:www.omdpapi.com?/apikey=c62a2e9d';
 
-   },
-   {
-    id:3,
-    text:'nurse appointment',
-    day:'Feb 5th 2022',
-    reminder:true,
-
-    }
-])
-//Add Task
-const addTask=(task)=>{ 
-
-  console.log(task)
-  const id=Math.floor(Math.random() * 10000) +1
-  const newTask={id, ...task}
-  setTasks([...tasks, newTask])
+const Movie1={
+  "Title":"Amazing Spiderman Syndrome",
+  "year":"2012",
+  "imdbID":3020300,
+  "Type":"Movie",
+  "poster":"N/A"
 }
 
-
-//Delete Task
-
-const deleteTask=(id)=>{ 
-setTasks(tasks.filter((task)=>task.id!=id))
- }
-
-//ToggleReminder
-const ToggleReminder=(id)=>{ 
-setTasks(tasks.map((task)=>task.id=id? {...task, reminder:!task.reminder} : task))
-}
+const App=()=>{
+const [movies, setMovies]=useState([]);
+const [searchTerm, setSearchTerm]=useState('');
 
 
-   return (
-    <div className='container'>
-      <Header onAdd={()=>setShowAddTask(!showAddTask) }  showAdd={showAddTask }
-/> 
-      {showAddTask  && <AddTask onAdd= {addTask}/>}
-      {tasks.length>0? <Tasks tasks={tasks} onToggle={ToggleReminder}
-       onDelete={deleteTask}/>:'No tasks found' }
-     
+  const searchMovies=async(title)=>{ 
+     const response=await fetch(`${API_URL}&s=${title}`);
+     const data=await response.json();
+     setMovies(data.Search);
+  }
+
+  useEffect(()=>{
+
+    searchMovies('Spiderman');
+
+
+  },[]);
+
+  return(
+    <div>
+    <h1>Movieland</h1>
+    <div className="Search">
+    <input placeholder="search for Movie" value={searchTerm}
+    onChange={(e)=>setSearchTerm(e.target.value)}/>
+    {/* <img src={SearchIcon} alt="search" onClick={()=>searchMovies{searchTerm}}/> */}
     </div>
-  )
+
+    {
+      movies.length > 0?(
+        <div className="container">
+          {movies.map((movie)=>{
+
+       <MovieCard Movie={movie}/>
+
+          })}
+    
+        </div>
+      ):(
+        <div className="empty">
+          <h2>no Movies found</h2>
+
+        </div>
+      )
+    }
+
+   
+    </div>
+    
+
+  );
 }
 
-export default App
+export default App;
+
+// import { useState, useEffect } from 'react';
+// import React, { Component } from 'react';
+// import logo from './logo.svg';
+// import './App.css';
+ 
+
+// const App=()=>{  
+//   const [Counter, setCounter]=useState(0)
+//   useEffect(()=>{
+
+//     setCounter(100);
+    
+//   },[])
+//     return (
+     
+//       <div className="App">
+//        <button onClick={()=>setCounter((prevCount)=>prevCount -1)}>-</button>
+//        <h1>{Counter}</h1>
+//        <button onClick={()=>setCounter((prevCount)=>prevCount +1)}>+</button>    
+//       </div>
+//     );
+  
+// }
+
+// export default App;
